@@ -9,7 +9,7 @@ describe("PetPolicyService", () => {
     var expect = chai.expect;
 
     beforeEach(() => {
-        bard.appModule('policyApp');
+        bard.appModule("policyApp");
         bard.inject(function (_$httpBackend_, _policyService_) {
             $httpBackend = _$httpBackend_;
             policyService = _policyService_;

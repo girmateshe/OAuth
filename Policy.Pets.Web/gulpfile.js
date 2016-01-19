@@ -64,7 +64,7 @@ gulp.task('images', ['clean-images'], function () {
 });
 
 gulp.task('clean', function (done) {
-    var delconfig = [].concat(config.build, config.temp, '!' + config.webinf);
+    var delconfig = [].concat(config.build, config.temp);
     console.log(delconfig);
     log('Cleaning: ' + $.util.colors.blue(delconfig));
     del(delconfig, { force: true }, done);
@@ -92,8 +92,7 @@ gulp.task('clean-code', function (done) {
         config.build + 'fonts',
         config.build + 'images',
         config.build + 'styles',
-        config.build + 'js',
-        '!' + config.build + config.webinf
+        config.build + 'js'
     );
     clean(files, done);
 });

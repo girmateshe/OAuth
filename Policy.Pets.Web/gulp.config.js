@@ -19,7 +19,7 @@ module.exports = function () {
         alljs: [
             tempApp + '**/*.js'
         ],
-        build: './../webapp/',
+        build: './webapp/',
         client: client,
         css: [
             './bower_components/bootstrap/dist/css/bootstrap.css',
@@ -131,8 +131,7 @@ module.exports = function () {
          * Node settings
          */
         defaultPort: 7203,
-        nodeServer: './src/server/app.js',
-        webinf: 'WEB-INF/*'
+        nodeServer: './src/server/app.js'
     };
 
     config.getWiredepDefaultOptions = function () {
