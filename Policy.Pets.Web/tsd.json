@@ -2,23 +2,50 @@
   "version": "v4",
   "repo": "borisyankov/DefinitelyTyped",
   "ref": "master",
-  "path": "typings",
-  "bundle": "typings/tsd.d.ts",
+  "path": "ts_definitions",
+  "bundle": "ts_definitions/tsd.d.ts",
   "installed": {
-    "jquery/jquery.d.ts": {
-      "commit": "dc9dabe74a5be62613b17a3605309783a12ff28a"
+    "assertion-error/assertion-error.d.ts": {
+      "commit": "81b951f1ac437d1eb5ff5171a0bfa6c467634b13"
+    },
+    "chai/chai.d.ts": {
+      "commit": "81b951f1ac437d1eb5ff5171a0bfa6c467634b13"
+    },
+    "mocha/mocha.d.ts": {
+      "commit": "81b951f1ac437d1eb5ff5171a0bfa6c467634b13"
+    },
+    "sinon-chai/sinon-chai.d.ts": {
+      "commit": "81b951f1ac437d1eb5ff5171a0bfa6c467634b13"
+    },
+    "sinon/sinon.d.ts": {
+      "commit": "81b951f1ac437d1eb5ff5171a0bfa6c467634b13"
     },
     "angularjs/angular.d.ts": {
-      "commit": "dc9dabe74a5be62613b17a3605309783a12ff28a"
+      "commit": "70bf7e2bfeb0d5b1b651ef3219bcc65c8eec117e"
     },
-    "angularjs/angular-resource.d.ts": {
-      "commit": "dc9dabe74a5be62613b17a3605309783a12ff28a"
-    },
-    "angularjs/angular-route.d.ts": {
-      "commit": "dc9dabe74a5be62613b17a3605309783a12ff28a"
+    "jquery/jquery.d.ts": {
+      "commit": "70bf7e2bfeb0d5b1b651ef3219bcc65c8eec117e"
     },
     "angularjs/angular-mocks.d.ts": {
-      "commit": "dc9dabe74a5be62613b17a3605309783a12ff28a"
+      "commit": "81b951f1ac437d1eb5ff5171a0bfa6c467634b13"
+    },
+    "angularjs/angular-resource.d.ts": {
+      "commit": "70bf7e2bfeb0d5b1b651ef3219bcc65c8eec117e"
+    },
+    "angularjs/angular-route.d.ts": {
+      "commit": "81b951f1ac437d1eb5ff5171a0bfa6c467634b13"
+    },
+    "angular-ui-router/angular-ui-router.d.ts": {
+      "commit": "81b951f1ac437d1eb5ff5171a0bfa6c467634b13"
+    },
+    "angular-ui-bootstrap/angular-ui-bootstrap.d.ts": {
+      "commit": "81b951f1ac437d1eb5ff5171a0bfa6c467634b13"
+    },
+    "bootstrap/bootstrap.d.ts": {
+      "commit": "81b951f1ac437d1eb5ff5171a0bfa6c467634b13"
+    },
+    "bardjs/bardjs.d.ts": {
+      "commit": "81b951f1ac437d1eb5ff5171a0bfa6c467634b13"
     }
   }
 }

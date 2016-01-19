@@ -1,333 +1,422 @@
-/**
- * Define dependencies
- */
-var Q = require("q"),
-    gulp = require('gulp'),
-    gulpif = require('gulp-if'),
-    gutil = require('gulp-util'),
-    path = require('path') ,
-    bowerFiles = require('gulp-bower-files'),
-    minifycss = require('gulp-minify-css'),
-    jshint = require('gulp-jshint'),
-    jshintStylish = require('jshint-stylish-ex'),
-    uglifyjs = require('gulp-uglifyjs'),
-    uglify = require('gulp-uglify'),
-    rename = require('gulp-rename'),
-    clean = require('gulp-clean'),
-    concat = require('gulp-concat'),
-    livereload = require('gulp-livereload'),
-    inject = require("gulp-inject"),
-    autoprefixer = require('gulp-autoprefixer'),
-    htmlmin = require('gulp-htmlmin'),
-    runSequence = require('run-sequence'),
-    mergestream = require('merge-stream'),
-    gulpFilter = require('gulp-filter'),
-    ts = require('gulp-type'),
-    karma = require('gulp-karma')
-    gulpProtractorAngular = require('gulp-angular-protractor');
+var gulp = require('gulp');
+var args = require('yargs').argv;
+var browserSync = require('browser-sync');
+var config = require('./gulp.config')();
+var del = require('del');
+var path = require('path');
+var runSequence = require('run-sequence')
+var _ = require('lodash');
+var $ = require('gulp-load-plugins')({ lazy: true });
+var port = process.env.PORT || config.defaultPort;
 
-/**
- * Load config files
- */
-var pkg = require('./package.json');
-var cfg = require('./build.config.js');
+gulp.task('help', $.taskListing);
+gulp.task('default', ['help']);
 
-var destDir = path.join(cfg.dir.build, cfg.dir.app),
-    assetDir = path.join(cfg.dir.build, cfg.dir.assets),
-    imagesDir = path.join(cfg.dir.build, cfg.dir.images),
-    fontsDir = path.join(cfg.dir.build, cfg.dir.fonts);
+gulp.task('vet', function () {
+    log('Analyzing source with JSHint and JSCS');
 
-var sources = {
-    css: {
-        vendor: [path.join(assetDir, 'bootstrap.min.css'),
-                 path.join(assetDir, '**', '*.css')],
-        src: [path.join(assetDir, 'app.css')]
-    },
-    vendor: [path.join(destDir, 'jquery', '**', '*.js'),
-             path.join(destDir, 'angular', '**', '*.js'),
-             path.join(destDir, 'angular-route', '**', '*.js'),
-             path.join(destDir, 'angular-mocks', '**', '*.js'),
-             path.join(destDir, 'angular-resource', '**', '*.js'),
-             path.join(destDir, 'angular-ui-router', '**', '*.js'),
-             path.join(destDir, 'bootstrap', '**', '*.js')
-    ],
-    js: [
-            path.join(destDir, 'services', '**', '*.js'),
-            path.join(destDir, 'controllers', '**', '*.js'),
-            path.join(destDir, 'configs', '**', '*.js'),
-            path.join(destDir, 'app.js')]
-};
-
-// ----------------------------------------------------------------------------
-// COMMON TASKS
-// ----------------------------------------------------------------------------
-/**
- * Clean build (bin) and compile (compile) directories
- */
-gulp.task('clean', function () {
-    return gulp.src([cfg.dir.build, cfg.dir.compile], { read: false })
-        .pipe(clean());
+    return gulp
+        .src([]) //TODO: fix - .src(config.alljs)
+        .pipe($.if(args.verbose, $.print()))
+        .pipe($.jscs()) //code style linter/formatter for enforcing style guide
+        .pipe($.jshint()) //static code analysis for detecting errors and potential problems
+        .pipe($.jshint.reporter('jshint-stylish', { verbose: true }))
+        .pipe($.jshint.reporter('fail'));
 });
 
+gulp.task('styles', ['clean-styles'], function () {
+    log('Compiling Less --> CSS');
 
-// ----------------------------------------------------------------------------
-// BASIC BUILD TASKS
-// ----------------------------------------------------------------------------
-
-/**
- * App css
- */
-gulp.task('app:css:build', function () {
-    var destDir = path.join(cfg.dir.build, cfg.dir.assets);
-
-    var cssFilter = gulpFilter('**/*.css');
-    var vendorCss = bowerFiles().pipe(cssFilter);
-    var vendorFonts = bowerFiles().pipe(gulpFilter(['**/*.woff', '**/*.eot', '**/*.svg', '**/*.ttf', '**/*.woff2']));
-
-    var appCss = gulp.src(cfg.src.assets);
-    var bootstrapCss = [cfg.dir.vendor + "/bootstrap/dist/css/bootstrap.min.css"];
-
-    gulp.src(bootstrapCss).pipe(gulp.dest(assetDir));
-
-    return mergestream(vendorCss, appCss, vendorFonts)
-          .pipe(gulp.dest(destDir));
+    return gulp
+        .src(config.less)
+        .pipe($.plumber())
+        .pipe($.less())
+        .pipe($.autoprefixer({ browsers: ['last 2 version', '> 5%'] }))
+        .pipe(gulp.dest(config.temp));
 });
 
-gulp.task('app:css:bundle', function () {
+gulp.task('ts', ['clean-js'], function () {
+    log('Compiling TypeScript --> JS');
 
-    if (pkg.debug == true) return;
-
-    logHighlight("Bundling css files");
-
-    var css = sources.css.src.concat(sources.css.vendor);
-
-    return gulp.src(css)
-        .pipe(concat('app.' + pkg.version + (pkg.minifyCss == true ? '.min' : '') + '.css'))
-        .pipe(gulpif(pkg.minifyCss == true, minifycss()))
-        .pipe(gulp.dest(assetDir));
-});
-
-/**
- * JS
- */
-gulp.task('app:js:build', function () {
-    logHighlight("Copy js files");
-    var destDir = path.join(cfg.dir.build, cfg.dir.app);
-    var defDir = path.join(cfg.dir.build, 'definitions')
-    var jsFilter = gulpFilter('**/*.js');
-
-    var vendorJS = bowerFiles()
-        .pipe(jsFilter);
-
-    var src = cfg.src.ts;
-    src.push(cfg.src.tslibs);
-    src.push('!' + cfg.src.assets);
-    
-    var tsResult = gulp.src(src)
-        .pipe(ts({
-            declarationFiles: true,
+    return gulp
+        .src([].concat(config.tslibs, config.ts))
+        .pipe($.typescript({
             noExternalResolve: true
-        }));
-
-    tsResult.dts.pipe(gulp.dest(defDir));
-
-    var scripts = gulp.src(cfg.src.scripts);
-
-    return mergestream(vendorJS, tsResult.js, scripts)
-          .pipe(gulp.dest(destDir));
-});
-
-gulp.task('app:js:bundle', function () {
-
-    if (pkg.debug == true) return;
-
-    logHighlight("Bundling js files");
-
-    var src = sources.vendor.concat(sources.js);
-
-    return gulp.src(src)
-        .pipe(concat('app.' + pkg.version + (pkg.minifyJs == true ? '.min' : '') + '.js'))
-        .pipe(gulpif(pkg.minifyJs == true, uglify()))
-        .pipe(gulp.dest(destDir));
-});
-
-
-/**
- * Typescript: ts lint and compile
- */
-gulp.task('tests:build', ['app:build'], function () {
-    var destDir = path.join(cfg.dir.build ,'tests');
-    logHighlight("Compiling Typescript test files to js files to dir: " + destDir);
-
-    var src = cfg.src.test;
-    src.push('build/definitions/**/*.ts');
-    src.push(cfg.src.tslibs);
-    src.push('!' + cfg.src.assets);
-    var tsResult = gulp.src(src)
-        .pipe(ts({
-            declarationFiles: true,
-            noExternalResolve: true,
-            sortOutput:true
-        }));
-
-    //tsResult.dts.pipe(gulp.dest('release/definitions'));
-    return tsResult.js
-        .pipe(gulpif(pkg.debug == false, concat('tests.'+ pkg.version + '.js')))
-        .pipe(gulp.dest(destDir));
-});
-
-/**
- * This task runs the test cases using karma.
- */
-gulp.task('app:test',['tests:build'], function(done) {
-    // Be sure to return the stream
-    return gulp.src('./idontexist')
-        .pipe(karma({
-            configFile: 'test/test-unit-build.conf.js',
-            action: 'run'
         }))
-        .on('error', function(err) {
-            // Make sure failed tests cause gulp to exit non-zero
-            throw err;
-        });
+        .pipe(gulp.dest(config.temp));
 });
 
-/**
- *  JSON
- */
-gulp.task('app:json:build', function () {
-    return gulp.src(cfg.src.json)
-        .pipe(gulp.dest(cfg.dir.build));
+gulp.task('fonts', ['clean-fonts'], function () {
+    log('Copying fonts');
+
+    return gulp
+        .src(config.fonts)
+        .pipe(gulp.dest(config.build + 'fonts'));
 });
 
-// Images
-gulp.task('app:images', function () {
-    return gulp.src(cfg.src.images)
-            .pipe(gulp.dest(imagesDir));
+gulp.task('images', ['clean-images'], function () {
+    log('Copying and compressing the images');
+
+    return gulp
+        .src(config.images)
+        .pipe($.imagemin({ optimizationLevel: 4 }))
+        .pipe(gulp.dest(config.build + 'images'));
 });
 
-gulp.task('app:copyfonts', function () {
-    var dest = path.join(cfg.dir.build, cfg.dir.assets, '/bootstrap/dist/fonts');
-    return gulp.src(cfg.src.fonts)
-            .pipe(gulp.dest(dest));
+gulp.task('clean', function (done) {
+    var delconfig = [].concat(config.build, config.temp, '!' + config.webinf);
+    console.log(delconfig);
+    log('Cleaning: ' + $.util.colors.blue(delconfig));
+    del(delconfig, { force: true }, done);
 });
 
-
-
-// Data
-gulp.task('data', function () {
-    return gulp.src([
-            'app/scripts/**/*.csv',
-            'app/scripts/**/*.json'])
-        .pipe(gulp.dest('dist/scripts'))
-        .pipe($.size());
+gulp.task('clean-fonts', function (done) {
+    clean(config.build + 'fonts/**/*.*', done);
 });
 
-/**
- * index.html: inject css and js files
- */
-gulp.task('html:build', function () {
-    var destDir = path.join(cfg.dir.build);
-    var ignorePath = path.join(cfg.dir.build);
-    
-    gulp.src(cfg.src.webinf)
-        .pipe(gulp.dest(path.join(cfg.dir.build, cfg.dir.webinf)));
+gulp.task('clean-images', function (done) {
+    clean(config.build + 'images/**/*.*', done);
+});
 
-    var src = sources.vendor.concat(sources.js);
-    var css = sources.css.vendor.concat(sources.css.src);
+gulp.task('clean-styles', function (done) {
+    clean(config.temp + '**/*.css', done);
+});
 
-    if (pkg.debug == false) {
-        src = [path.join(cfg.dir.build, cfg.dir.app, 'app.' + pkg.version + (pkg.minifyJs == true ? '.min' : '') + '.js')];
-        css = [path.join(cfg.dir.build, cfg.dir.assets, 'app.' + pkg.version + (pkg.minifyCss == true ? '.min' : '') + '.css')];
+gulp.task('clean-js', function (done) {
+    clean(config.temp + '**/*.js', done);
+});
+
+gulp.task('clean-code', function (done) {
+    var files = [].concat(
+        config.build + '**/*.*',
+        config.build + 'fonts',
+        config.build + 'images',
+        config.build + 'styles',
+        config.build + 'js',
+        '!' + config.build + config.webinf
+    );
+    clean(files, done);
+});
+
+gulp.task('less-watcher', function () {
+    gulp.watch([config.less], ['styles']);
+});
+
+gulp.task('ts-watcher', function () {
+    gulp.watch([config.ts], ['ts']);
+});
+
+gulp.task('templatecache', ['clean-code'], function () {
+    log('Creating AngularJS $templateCache');
+
+    return gulp
+        .src(config.htmltemplates)
+        .pipe($.minifyHtml({ empty: true }))
+        .pipe($.angularTemplatecache(
+            config.templateCache.file,
+            config.templateCache.options
+            ))
+        .pipe(gulp.dest(config.temp));
+});
+
+gulp.task('wiredep', ['ts'], function () {
+    log('Wire up the bower css js and our app js into the html');
+    var options = config.getWiredepDefaultOptions();
+    var wiredep = require('wiredep').stream;
+
+    return gulp
+        .src(config.index)
+        .pipe(wiredep(options))
+        .pipe($.inject(gulp.src(config.js)))
+        .pipe(gulp.dest(config.client));
+});
+
+gulp.task('inject', ['wiredep', 'styles', 'templatecache'], function () {
+    log('Wire up the app css into the html, and call wiredep ');
+
+    return gulp
+        .src(config.index)
+        .pipe($.inject(gulp.src(config.css)))
+        .pipe(gulp.dest(config.client));
+});
+
+gulp.task('build', ['optimize', 'images', 'fonts'], function (callback) {
+    log('Building everything');
+
+    var msg = {
+        title: 'gulp build',
+        subtitle: 'Deployed to the build folder',
+        message: 'Running "gulp serve-build"'
+    };
+    del(config.temp);
+    log(msg);
+    notify(msg);
+});
+
+gulp.task('serve-specs', ['build-specs'], function (done) {
+    log('run the spec runner');
+    serve(true /* isDev */, true /* specRunner */);
+    done();
+});
+
+gulp.task('build-specs', ['templatecache', 'ts'], function () {
+    log('building the spec runner');
+
+    var wiredep = require('wiredep').stream;
+    var options = config.getWiredepDefaultOptions();
+    var specs = config.specs;
+
+    options.devDependencies = true;
+
+    if (args.startServers) {
+        specs = [].concat(specs, config.serverIntegrationSpecs);
     }
-  
-    return gulp.src(cfg.src.html)
-        .pipe(inject(gulp.src(src, {read: false}), {ignorePath: ignorePath, starttag: '<!-- inject:app:{{ext}} -->'}))
-        .pipe(inject(gulp.src(css, {read: false}), {ignorePath: ignorePath}))
-        .pipe(gulp.dest(destDir));
+
+    return gulp
+        .src(config.specRunner)
+        .pipe(wiredep(options))
+        .pipe($.inject(gulp.src(config.testlibraries),
+            { name: 'inject:testlibraries', read: false }))
+        .pipe($.inject(gulp.src(config.js)))
+        .pipe($.inject(gulp.src(config.specHelpers),
+            { name: 'inject:spechelpers', read: false }))
+        .pipe($.inject(gulp.src(specs),
+            { name: 'inject:specs', read: false }))
+        .pipe($.inject(gulp.src(config.temp + config.templateCache.file),
+            { name: 'inject:templates', read: false }))
+        .pipe(gulp.dest(config.client));
 });
 
+gulp.task('optimize', ['inject', 'test'], function () {
+    log('Optimizing the javascript, css, html');
 
-/**
- *
- */
-gulp.task('app:build', function () {
-    var deferred = Q.defer();
+    var assets = $.useref.assets({ searchPath: './' });
+    var templateCache = config.temp + config.templateCache.file;
+    var cssFilter = $.filter('**/*.css');
+    var jsLibFilter = $.filter('**/' + config.optimized.lib);
+    var jsAppFilter = $.filter('**/' + config.optimized.app);
 
-    runSequence(
-        'clean',
-        'app:css:build',
-        'app:css:bundle',
-        'app:js:build',
-        'app:js:bundle',
-        'app:json:build',
-        'app:images',
-        'app:copyfonts',
-        'html:build',
-        function () {
-            deferred.resolve();
-        });
-
-    return deferred.promise;
-});
-
-gulp.task('unit', function (done) {
-    // Be sure to return the stream
-    return gulp.src('./idontexist')
-        .pipe(karma({
-            configFile: 'test/test-unit-src.conf.js',
-            action: 'run'
-        }))
-        .on('error', function (err) {
-            // Make sure failed tests cause gulp to exit non-zero
-            throw err;
-        });
-});
-
-// Setting up the test task 
-gulp.task('e2e', function (callback) {
-    return gulp.src(['./idontexist'])
-            .pipe(gulpProtractorAngular({
-                'configFile': 'test/protractor.conf.js',
-                'debug': false,
-                'autoStartStopServer': true
+    return gulp
+        .src(config.index)
+        .pipe($.plumber())
+        .pipe($.inject(
+            gulp.src(templateCache, { read: false }), {
+                starttag: '<!-- inject:templates:js -->'
             }))
-            .on('error', function (e) {
-                console.log(e);
-            })
-            .on('end', callback);
+        .pipe(assets)
+        .pipe(cssFilter)
+        .pipe($.csso())
+        .pipe(cssFilter.restore())
+        .pipe(jsLibFilter)
+        .pipe($.uglify())
+        .pipe(jsLibFilter.restore())
+        .pipe(jsAppFilter)
+        .pipe($.ngAnnotate())
+        .pipe($.uglify())
+        .pipe(jsAppFilter.restore())
+        .pipe($.rev())
+        .pipe(assets.restore())
+        .pipe($.useref())
+        .pipe($.revReplace())
+        .pipe(gulp.dest(config.build))
+        .pipe($.rev.manifest())
+        .pipe(gulp.dest(config.build));
 });
-
-// ----------------------------------------------------------------------------
-// WATCH BUILD TASKS
-// ----------------------------------------------------------------------------
-
-
-gulp.task('watch', ['app:build'], function () {
-    var server = livereload();
-
-    // .css files
-    gulp.watch('src/**/*.css', ['app:css:build']);
-    // .js files
-    gulp.watch('src/**/*.js', ['app:js:build']);
-    // .html files
-    gulp.watch('src/**/*.html', ['html:build']);
-
-    var buildDir = path.join(cfg.dir.build, '**');
-    gulp.watch(buildDir).on('change', function (file) {
-        server.changed(file.path);
-    });
-});
-
-
-// ----------------------------------------------------------------------------
-// HELPER FUNCTIONS
-// ----------------------------------------------------------------------------
 
 /**
- * Highlight debug messages in log
- * @param message
+ * Bump the version
+ * --type=pre will bump the prerelease version *.*.*-x
+ * --type=patch or no flag will bump the patch version *.*.x
+ * --type=minor will bump the minor version *.x.*
+ * --type=major will bump the major version x.*.*
+ * --version=1.2.3 will bump to a specific version and ignore other flags
  */
-function logHighlight(message) {
-    gutil.log(gutil.colors.black.bgWhite(message));
-};
+gulp.task('bump', function () {
+    var msg = 'Bumping versions';
+    var type = args.type;
+    var version = args.version;
+    var options = {};
+    if (version) {
+        options.version = version;
+        msg += ' to ' + version;
+    } else {
+        options.type = type;
+        msg += ' for a ' + type;
+    }
+    log(msg);
+
+    return gulp
+        .src(config.packages)
+        .pipe($.print())
+        .pipe($.bump(options))
+        .pipe(gulp.dest(config.root));
+});
+
+gulp.task('serve-build', function () {
+    serve(false /* isDev */);
+});
+
+gulp.task('serve-dev', ['inject'], function () {
+    serve(true /* isDev */);
+});
+
+gulp.task('test', [/*'vet', */'templatecache', 'ts'], function (done) {
+    startTests(true /* singleRun */, done);
+});
+
+gulp.task('autotest', [/*'vet', */'templatecache'], function (done) {
+    startTests(false /* singleRun */, done);
+});
+
+////////////
+
+function serve(isDev, specRunner) {
+    log('Serving');
+    var nodeOptions = {
+        script: config.nodeServer,
+        delayTime: 1,
+        env: {
+            'PORT': port,
+            'NODE_ENV': isDev ? 'dev' : 'build'
+        },
+        watch: [config.server]
+    };
+
+    return $.nodemon(nodeOptions)
+        .on('restart', function (ev) {
+            log('*** nodemon restarted');
+            log('files changed on restart:\n' + ev);
+            setTimeout(function () {
+                browserSync.notify('reloading now ...');
+                browserSync.reload({ stream: false });
+            }, config.browserReloadDelay);
+        })
+        .on('start', function () {
+            log('*** nodemon started');
+            startBrowserSync(isDev, specRunner);
+        })
+        .on('crash', function () {
+            log('*** nodemon crashed: script crashed for some reason');
+        })
+        .on('exit', function () {
+            log('*** nodemon exited cleanly');
+        });
+}
+
+function changeEvent(event) {
+    var srcPattern = new RegExp('/.*(?=/' + config.source + ')/');
+    log('File ' + event.path.replace(srcPattern, '') + ' ' + event.type);
+}
+
+function notify(options) {
+    var notifier = require('node-notifier');
+    var notifyOptions = {
+        sound: 'Bottle',
+        contentImage: path.join(__dirname, 'gulp.png'),
+        icon: path.join(__dirname, 'gulp.png')
+    };
+    _.assign(notifyOptions, options);
+    notifier.notify(notifyOptions);
+}
+
+function startBrowserSync(isDev, specRunner) {
+    if (args.nosync || browserSync.active) {
+        return;
+    }
+
+    log('Starting browser-sync on port ' + port);
+
+    if (isDev) {
+        gulp.watch([config.less, config.ts, config.html], ['styles'])
+            .on('change', changeEvent);
+    } else {
+        gulp.watch([config.less, config.ts, config.html], ['optimize', browserSync.reload])
+            .on('change', changeEvent);
+    }
+
+    var options = {
+        proxy: 'localhost:' + port,
+        port: isDev ? 3000 : 5000,
+        files: isDev ? [
+            config.client + '**/*.*',
+            '!' + config.less,
+            config.temp + '**/*.css'
+        ] : [
+            config.build + '**/*.*'
+        ],
+        ghostMode: {
+            clicks: true,
+            location: false,
+            forms: true,
+            scroll: true
+        },
+        injectChanges: true,
+        logFileChanges: true,
+        logLevel: 'debug',
+        logPrefix: 'gulp-patterns',
+        notify: true,
+        reloadDelay: 0 //1000
+    };
+
+    if (specRunner) {
+        options.startPath = config.specRunnerFile;
+    }
+
+    browserSync(options);
+}
+
+function startTests(singleRun, done) {
+    var child;
+    var fork = require('child_process').fork;
+    var karma = require('karma').server;
+    var excludeFiles = [];
+    var serverSpecs = config.serverIntegrationSpecs; //TODO
+
+    if (args.startServers) { // gulp test --startServers
+        log('Starting server');
+        var savedEnv = process.env;
+        savedEnv.NODE_ENV = 'dev';
+        savedEnv.PORT = 8888;
+        child = fork(config.nodeServer);
+    } else {
+        if (serverSpecs && serverSpecs.length) {
+            excludeFiles = serverSpecs;
+        }
+    }
+
+    karma.start({
+        configFile: __dirname + '/karma.conf.js',
+        exclude: excludeFiles,
+        singleRun: !!singleRun
+    }, karmaCompleted);
+
+    function karmaCompleted(karmaResult) {
+        log('Karma completed!');
+        if (child) {
+            log('Shutting down the child process');
+            child.kill();
+        }
+        if (karmaResult === 1) {
+            done('karma: tests failed with code ' + karmaResult);
+        } else {
+            done();
+        }
+    }
+}
+
+function clean(path, done) {
+    log('Cleaning: ' + $.util.colors.blue(path));
+    del(path, { force: true }, done);
+}
+
+function log(msg) {
+    if (typeof (msg) === 'object') {
+        for (var item in msg) {
+            if (msg.hasOwnProperty(item)) {
+                $.util.log($.util.colors.blue(msg[item]));
+            }
+        }
+    } else {
+        $.util.log($.util.colors.blue(msg));
+    }
+}

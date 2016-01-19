@@ -9,7 +9,7 @@ using Policy.Pets.Provider.Interfaces;
 namespace Policy.Pets.Provider
 {
 
-    public class PetPolicyProvider : BasePetProvider<PetOwner> , IPetPolicyProvider
+    public class PetPolicyProvider : BaseProvider<PetOwner> , IPetPolicyProvider
     {
         public PetPolicyProvider(IConfiguration configuration) : 
             base(configuration.ConnectionStrings[DatabaseType.LocalDb])

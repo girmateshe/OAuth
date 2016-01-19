@@ -8,8 +8,7 @@ using Policy.Pets.Provider.Interfaces;
 
 namespace Policy.Pets.Provider
 {
-
-    public class PetProvider : BasePetProvider<Pet> , IPetProvider
+    public class PetProvider : BaseProvider<Pet> , IPetProvider
     {
         public PetProvider(IConfiguration configuration) : 
             base(configuration.ConnectionStrings[DatabaseType.LocalDb])

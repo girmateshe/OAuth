@@ -6,11 +6,13 @@ namespace Common.Configuration
     public class Configuration : IConfiguration
     {
         public string RootRestApiUrl { get; set; }
+        public bool? IsAuthenticationEnabled { get; set; }
         public IDictionary<DatabaseType, string> ConnectionStrings { get; private set; }
 
         public Configuration()
         {
             RootRestApiUrl = ConfigurationManager.AppSettings["RootRestApiUrl"];
+            IsAuthenticationEnabled = ConfigurationManager.AppSettings["IsAuthenticationEnabled"].ConvertTo<bool>();
 
             ConnectionStrings = new Dictionary<DatabaseType, string>();
 

@@ -11,6 +11,7 @@ namespace Common.Configuration
     public interface IConfiguration
     {
         string RootRestApiUrl { get; set; }
+        bool? IsAuthenticationEnabled { get; set; }
         IDictionary<DatabaseType, string> ConnectionStrings { get; }
     }
 }

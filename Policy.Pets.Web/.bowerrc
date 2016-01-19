@@ -1,5 +1,6 @@
 {
-  "directory": "vendor",
-  "json": "bower.json"
+    "directory": "bower_components",
+    "scripts": {
+        "postinstall": "gulp wiredep"
+    }
 }
-

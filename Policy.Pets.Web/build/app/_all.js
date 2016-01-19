@@ -1,1 +1,0 @@
-var rs = App.Services;

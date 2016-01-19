@@ -8,7 +8,7 @@ using Policy.Pets.Provider.Interfaces;
 
 namespace Policy.Pets.Provider
 {
-    public class BreedProvider : BasePetProvider<Breed> , IBreedProvider
+    public class BreedProvider : BaseProvider<Breed> , IBreedProvider
     {
         public BreedProvider(IConfiguration configuration) : 
             base(configuration.ConnectionStrings[DatabaseType.LocalDb])

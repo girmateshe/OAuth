@@ -9,7 +9,7 @@ using Policy.Pets.Provider.Interfaces;
 
 namespace Policy.Pets.Provider
 {
-    public class CountryProvider : BasePetProvider<Country> , ICountryProvider
+    public class CountryProvider : BaseProvider<Country> , ICountryProvider
     {
         public CountryProvider(IConfiguration configuration) : 
             base(configuration.ConnectionStrings[DatabaseType.LocalDb])

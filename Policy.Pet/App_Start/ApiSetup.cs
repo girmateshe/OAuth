@@ -1,5 +1,6 @@
 ﻿using Common.Configuration;
 using Ninject;
+using Policy.Pets.Authentication;
 using Policy.Pets.Provider;
 using Policy.Pets.Provider.Interfaces;
 
@@ -37,6 +38,12 @@ namespace Policy.Pets
             kernel.Bind<ICountryProvider>().To<CountryProvider>().InSingletonScope();
             kernel.Bind<IBreedProvider>().To<BreedProvider>().InSingletonScope();
             kernel.Bind<IPetPolicyProvider>().To<PetPolicyProvider>().InSingletonScope();
+            kernel.Bind<IRequestContext>().To<RequestContext>().InSingletonScope();
+            kernel.Bind<IUserProvider>().To<UserProvider>().InSingletonScope();
+            kernel.Bind<IAuthorizationProvider>().To<AuthorizationProvider>().InSingletonScope();
+
+            ApiAuthorizeAttribute.Kernel = kernel;
+            ApiAuthorizeAttribute.AuthorizationProvider = kernel.Get<IAuthorizationProvider>();
         }
     }
 }

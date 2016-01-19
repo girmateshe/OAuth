@@ -40,3 +40,5 @@ Policy.Pets.IntegrationTests/bin/
  src/services/*.js
  test/unit/services/*.js
  vendor/
+Policy.Pets.Web/src/client/**/*.js
+Common/obj

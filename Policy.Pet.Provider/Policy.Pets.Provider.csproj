@@ -39,18 +39,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BasePetProvider.cs" />
+    <Compile Include="BaseProvider.cs" />
     <Compile Include="BreedProvider.cs" />
     <Compile Include="DebugContext.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Interfaces\IBreedProvider.cs" />
     <Compile Include="Interfaces\IDebugContext.cs" />
     <Compile Include="Interfaces\ICountryProvider.cs" />
+    <Compile Include="Interfaces\IUserProvider.cs" />
     <Compile Include="Interfaces\IPetProvider.cs" />
     <Compile Include="Interfaces\IPetPolicyProvider.cs" />
     <Compile Include="Interfaces\IProvider.cs" />
     <Compile Include="LogLevel.cs" />
     <Compile Include="CountryProvider.cs" />
+    <Compile Include="UserProvider.cs" />
     <Compile Include="PetProvider.cs" />
     <Compile Include="PetPolicyProvider.cs" />
     <Compile Include="Profiler.cs" />
