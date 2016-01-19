@@ -33,7 +33,7 @@ console.log('NODE_ENV=' + environment);
 switch (environment) {
     case 'build':
         console.log('** BUILD **');
-        app.use(express.static('./../webapp/'));
+        app.use(express.static('./webapp/'));
         app.use('/*', express.static('./../webapp/index.html'));
         break;
     default:
@@ -41,7 +41,7 @@ switch (environment) {
         app.use(express.static('./src/client/'));
         app.use(express.static('./'));
         app.use(express.static('./tmp'));
-        app.use('/*', express.static('./src/client/index.html'));
+        app.use('/*', express.static('./src/client/index.html/#/policies'));
         break;
 }
 

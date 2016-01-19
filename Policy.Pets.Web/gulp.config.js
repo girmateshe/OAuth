@@ -19,7 +19,7 @@ module.exports = function () {
         alljs: [
             tempApp + '**/*.js'
         ],
-        build: './../webapp/',
+        build: './webapp/',
         client: client,
         css: [
             './bower_components/bootstrap/dist/css/bootstrap.css',

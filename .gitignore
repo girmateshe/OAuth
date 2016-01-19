@@ -42,3 +42,17 @@ Policy.Pets.IntegrationTests/bin/
  vendor/
 Policy.Pets.Web/src/client/**/*.js
 Common/obj
+
+Policy.Pets.Web/src/client/app/**/*.js.map
+
+Policy.Pets.IntegrationTests/obj/
+
+Policy.Pets.Web/.tmp
+
+bin/
+bower_components/
+node_modules/
+Policy.Pets.Web/obj/
+packages/
+Policy.Pets.Web/report/
+Policy.Pets.Web/report/
