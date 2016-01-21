@@ -119,4 +119,8 @@
         var channelId = req.params.channelId;
         res.send({ ChannelId: channelId });
     });
+
+    app.get('/api/hello', function (req, res, next) {
+        res.send({ 'Hello' : 'world' });
+    });
 };

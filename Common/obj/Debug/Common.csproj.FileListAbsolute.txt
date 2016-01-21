@@ -11,3 +11,10 @@ C:\Git\repo\girmateshe\Common\bin\Debug\Newtonsoft.Json.dll
 C:\Git\repo\girmateshe\Common\bin\Debug\Newtonsoft.Json.xml
 C:\Git\repo\girmateshe\Common\obj\Debug\Common.dll
 C:\Git\repo\girmateshe\Common\obj\Debug\Common.pdb
+C:\dev\workspace\repo\OAuth\Common\bin\Debug\Common.dll
+C:\dev\workspace\repo\OAuth\Common\bin\Debug\Common.pdb
+C:\dev\workspace\repo\OAuth\Common\bin\Debug\Newtonsoft.Json.dll
+C:\dev\workspace\repo\OAuth\Common\bin\Debug\Newtonsoft.Json.xml
+C:\dev\workspace\repo\OAuth\Common\obj\Debug\Common.csprojResolveAssemblyReference.cache
+C:\dev\workspace\repo\OAuth\Common\obj\Debug\Common.dll
+C:\dev\workspace\repo\OAuth\Common\obj\Debug\Common.pdb

@@ -7,11 +7,17 @@ namespace Common.Configuration
     {
         public string RootRestApiUrl { get; set; }
         public bool? IsAuthenticationEnabled { get; set; }
+        public string PrivateKey { get; set; }
+        public string PublicKey { get; set; }
+        public string Issuer { get; set; }
         public IDictionary<DatabaseType, string> ConnectionStrings { get; private set; }
 
         public Configuration()
         {
             RootRestApiUrl = ConfigurationManager.AppSettings["RootRestApiUrl"];
+            PrivateKey = ConfigurationManager.AppSettings["PrivateKey"];
+            PublicKey = ConfigurationManager.AppSettings["PublicKey"];
+            Issuer = ConfigurationManager.AppSettings["Issuer"];
             IsAuthenticationEnabled = ConfigurationManager.AppSettings["IsAuthenticationEnabled"].ConvertTo<bool>();
 
             ConnectionStrings = new Dictionary<DatabaseType, string>();

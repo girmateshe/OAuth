@@ -88,36 +88,10 @@ namespace Policy.Pets.App_Start
             var identity = new ClaimsIdentity(context.Options.AuthenticationType);
             identity.AddClaim(new Claim("uid", context.UserName));
             identity.AddClaim(new Claim("pw", context.Password.ToEncryptedText()));
-            identity.AddClaim(new Claim("clientId", GetIp(true)));
             identity.AddClaim(new Claim("role", "user"));
 
             context.Validated(identity);
 
-        }
-
-        public string GetIp(bool checkForward = false)
-        {
-            string ip = null;
-            if (checkForward)
-            {
-                ip = HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
-            }
-
-            if (string.IsNullOrEmpty(ip))
-            {
-                ip = HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
-            }
-            else
-            { // Using X-Forwarded-For last address
-                ip = ip.Split(',')
-                       .Last()
-                       .Trim();
-            }
-
-            HttpContext.Current.Trace.Write("Token Generation Client IP = " + ip);
-            HttpContext.Current.Trace.Write("Token Generation HTTP_X_FORWARDED_FOR = " + HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"]);
-
-            return ip;
         }
     }
 

@@ -12,6 +12,9 @@ namespace Common.Configuration
     {
         string RootRestApiUrl { get; set; }
         bool? IsAuthenticationEnabled { get; set; }
+        string PrivateKey { get; set; }
+        string PublicKey { get; set; }
+        string Issuer { get; set; }
         IDictionary<DatabaseType, string> ConnectionStrings { get; }
     }
 }
