@@ -18,3 +18,9 @@ C:\dev\workspace\repo\OAuth\Common\bin\Debug\Newtonsoft.Json.xml
 C:\dev\workspace\repo\OAuth\Common\obj\Debug\Common.csprojResolveAssemblyReference.cache
 C:\dev\workspace\repo\OAuth\Common\obj\Debug\Common.dll
 C:\dev\workspace\repo\OAuth\Common\obj\Debug\Common.pdb
+C:\test\OAuth\Common\bin\Debug\Common.dll
+C:\test\OAuth\Common\bin\Debug\Common.pdb
+C:\test\OAuth\Common\bin\Debug\Newtonsoft.Json.dll
+C:\test\OAuth\Common\bin\Debug\Newtonsoft.Json.xml
+C:\test\OAuth\Common\obj\Debug\Common.dll
+C:\test\OAuth\Common\obj\Debug\Common.pdb

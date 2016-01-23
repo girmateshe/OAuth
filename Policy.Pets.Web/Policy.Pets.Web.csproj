@@ -39,8 +39,6 @@
     <Content Include="src\client\app\views\policies\list.html" />
     <Content Include="src\client\test-helpers\bind-polyfill.js" />
     <Content Include="src\client\tests\protractor.conf.js" />
-    <Content Include="src\client\tests\test-unit-build.conf.js" />
-    <Content Include="src\client\tests\test-unit-src.conf.js" />
     <Content Include="src\server\app.js" />
     <Content Include="src\server\routes\dashboard\index.js" />
     <Content Include="src\server\routes\utils\jsonfileservice.js" />
