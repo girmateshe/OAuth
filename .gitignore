@@ -1,5 +1,6 @@
 /bin
 /Common/bin/
+/Common/obj/
 *.dll
 
 /Common/bin/Debug/Common.dll
