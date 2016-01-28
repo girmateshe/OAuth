@@ -38,11 +38,10 @@ namespace Policy.Pets
             kernel.Bind<ICountryProvider>().To<CountryProvider>().InSingletonScope();
             kernel.Bind<IBreedProvider>().To<BreedProvider>().InSingletonScope();
             kernel.Bind<IPetPolicyProvider>().To<PetPolicyProvider>().InSingletonScope();
-            kernel.Bind<IRequestContext>().To<RequestContext>().InSingletonScope();
             kernel.Bind<IUserProvider>().To<UserProvider>().InSingletonScope();
             kernel.Bind<IAuthorizationProvider>().To<AuthorizationProvider>().InSingletonScope();
+            kernel.Bind<ITokenProvider>().To<TokenProvider>().InSingletonScope();
 
-            ApiAuthorizeAttribute.Kernel = kernel;
             ApiAuthorizeAttribute.AuthorizationProvider = kernel.Get<IAuthorizationProvider>();
         }
     }

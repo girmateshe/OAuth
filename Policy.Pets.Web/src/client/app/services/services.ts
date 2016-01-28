@@ -8,5 +8,6 @@ module App.Services {
         .factory('petsService', ['$resource', App.Services.PetsService.factory])
         .factory('countryService', ['$resource', App.Services.CountriesService.factory])
         .factory('breedService', ['$resource', App.Services.BreedsService.factory])
-        .factory('httpService', ['$http', '$q', App.Services.HttpService.factory]);
+        .factory('httpService', ['$http', '$q', App.Services.HttpService.factory])
+        .factory('authService', ['$resource', App.Services.AuthService.factory]);
 }

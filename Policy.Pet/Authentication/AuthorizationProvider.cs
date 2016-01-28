@@ -1,80 +1,46 @@
 ﻿using Policy.Pets.Provider.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Specialized;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace Policy.Pets.Authentication
 {
     public class AuthorizationProvider : IAuthorizationProvider
     {
-        public bool IsAuthorized(IRequestContext requestContext, IUserProvider userProvider, UserRole userRole)
+        private ITokenProvider _tokenProvider;
+        public AuthorizationProvider(ITokenProvider tokenProvider)
         {
-            if (userRole == UserRole.None)
+            _tokenProvider = tokenProvider;
+        }
+
+        public async Task<bool> IsAuthorized()
+        {
+            string token = HttpContext.Current.Request.Headers["Authorization"];
+            if(string.IsNullOrWhiteSpace(token))
             {
-                userRole = UserRole.ReadOnly;
+                var query = HttpContext.Current.Request.Url.Query;
+                NameValueCollection qsColl = null;
+
+                if (!string.IsNullOrWhiteSpace(query))
+                {
+                    qsColl = HttpUtility.ParseQueryString(query);
+                }
+
+                if (qsColl != null)
+                {
+                    token = qsColl["access_token"];
+                }
+            }
+            else if (token.Length > 7)
+            {
+                //Ignore "Bearer " from the authorization header
+                token = token.Substring(7);
             }
 
-            string userName = requestContext.UserName,
-                   password = requestContext.Password;
-
-            if (userName == null || password == null)
-            {
+            if (string.IsNullOrWhiteSpace(token))
                 return false;
-            }
 
-            var ip = GetIp(true);
-            /*
-            if (ip != requestContext.ClientId)
-            {
-                return false;
-            }
-             * */
-
-            HttpContext.Current.Trace.Write("requestContext.ClientId = " + requestContext.ClientId);
-            HttpContext.Current.Trace.Write("ip = " + ip);
-
-            var result = userProvider.Validate(userName, password);
-
-            return result != null && result.Result;
+            return await _tokenProvider.Validate(token);
         }
-
-        private bool IsUserInRole(IRequestContext requestContext, UserRole role)
-        {
-            return true;
-        }
-
-        private bool IsAuthenticatedContext(IRequestContext requestContext)
-        {
-            return true;
-        }
-
-        public string GetIp(bool checkForward = false)
-        {
-            string ip = null;
-            if (checkForward)
-            {
-                ip = HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
-            }
-
-            if (string.IsNullOrEmpty(ip))
-            {
-                ip = HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
-            }
-            else
-            { // Using X-Forwarded-For last address
-                ip = ip.Split(',')
-                       .Last()
-                       .Trim();
-            }
-
-            HttpContext.Current.Trace.Write("Client IP = " + ip);
-            HttpContext.Current.Trace.Write("HTTP_X_FORWARDED_FOR = " + HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"]);
-            HttpContext.Current.Trace.Write("REMOTE_ADDR = " + HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]);
-            HttpContext.Current.Trace.Write("UserHostAddress = " + HttpContext.Current.Request.UserHostAddress);
-
-            return ip;
-        }
-
     }
 }

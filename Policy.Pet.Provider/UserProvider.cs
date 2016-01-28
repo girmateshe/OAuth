@@ -9,10 +9,10 @@ namespace Policy.Pets.Provider
 {
     public class UserProvider : BaseProvider<User> , IUserProvider
     {
-        public UserProvider(IConfiguration configuration) : 
+        public UserProvider(IConfiguration configuration, IDebugContext debugContext) : 
             base(configuration.ConnectionStrings[DatabaseType.LocalDb])
         {
-            
+            DebugContext = debugContext;
         }
 
         public async Task<bool> Validate(string userName, string password)

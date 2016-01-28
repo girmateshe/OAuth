@@ -40,6 +40,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model.cs" />
+    <Compile Include="TokenRequest.cs" />
+    <Compile Include="TokenContent.cs" />
+    <Compile Include="Token.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Pet.cs" />
     <Compile Include="PetOwner.cs" />

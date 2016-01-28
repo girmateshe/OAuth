@@ -3,7 +3,7 @@
 <html lang="en" data-framework="typescript">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Policy App</title>
     <meta charset="utf-8" />
     <style>
@@ -28,12 +28,25 @@
     <link rel="stylesheet" href="/.tmp/app.css">
     <!-- endinject -->
     <!-- endbuild -->
+
+
+
 </head>
     <body ng-app="policyApp" >
         
         <div style="width:80%; margin:auto">
             <h1>Policy App</h1>
 
+            <!--<div  ng-controller="LoginCtrl" >
+                <input type="submit" ng-click="vm.login()" value="Login" />
+                 <input type="submit" ng-click="vm.logout()" value="Log out" />
+            </div>-->
+
+            <div  ng-controller="LoginCtrl" >
+                <input type="submit" class="btn-primary btn-lg nodecoration pull-right" ng-click="vm.signout()" value="Sign out" />
+                <a ui-sref="login" class="btn-primary btn-lg nodecoration pull-right" style="margin-right:20px">Sign in</a>
+            </div>
+                        
             <div ui-view>
 
             </div>
@@ -54,10 +67,16 @@
         <script src="/bower_components/angular-animate/angular-animate.js"></script>
         <script src="/bower_components/angular-route/angular-route.js"></script>
         <script src="/bower_components/angular-resource/angular-resource.js"></script>
+        <script src="/bower_components/angular-storage/dist/angular-storage.js"></script>
+        <script src="/bower_components/angular-jwt/dist/angular-jwt.js"></script>
+        <script src="/bower_components/auth0.js/build/auth0.js"></script>
+        <script src="/bower_components/auth0-lock/build/auth0-lock.js"></script>
+        <script src="/bower_components/auth0-angular/build/auth0-angular.js"></script>
         <!-- endbower -->
         <!-- endbuild -->
         <!-- build:js js/app.js-->
         <!-- inject:js -->
+        <script src="/.tmp/app/services/AuthService.js"></script>
         <script src="/.tmp/app/services/BreedService.js"></script>
         <script src="/.tmp/app/services/CountryService.js"></script>
         <script src="/.tmp/app/services/HttpService.js"></script>
@@ -65,6 +84,7 @@
         <script src="/.tmp/app/services/PoliciesService.js"></script>
         <script src="/.tmp/app/services/services.js"></script>
         <script src="/.tmp/app/controllers/HttpController.js"></script>
+        <script src="/.tmp/app/controllers/LoginController.js"></script>
         <script src="/.tmp/app/controllers/PetsController.js"></script>
         <script src="/.tmp/app/controllers/PoliciesController.js"></script>
         <script src="/.tmp/app/controllers/controllers.js"></script>

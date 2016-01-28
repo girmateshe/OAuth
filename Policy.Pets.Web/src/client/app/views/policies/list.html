@@ -1,8 +1,12 @@
-﻿    <h3>All Policies</h3>
+﻿
+<div ng-show="policies == null || policies.length == 0">
+    No policies
+</div>
 
-<a ui-sref="newPolicy" class="btn-primary btn-lg nodecoration pull-right" style="margin-bottom:20px">Add New Policy</a>
-
-<table class="table">
+<div ng-show="policies != null && policies.length > 0">
+    <h3>All Policies</h3>
+    <a ui-sref="newPolicy" class="btn-primary btn-lg nodecoration pull-right" style="margin-bottom:20px">Add New Policy</a>
+    <table class="table">
         <tr>
             <td>Id</td>
             <td>Name</td>
@@ -26,3 +30,4 @@
             </td>
         </tr>
     </table>
+</div>

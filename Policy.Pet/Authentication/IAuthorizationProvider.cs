@@ -1,9 +1,10 @@
 ﻿using Policy.Pets.Provider.Interfaces;
+using System.Threading.Tasks;
 
 namespace Policy.Pets.Authentication
 {
     public interface IAuthorizationProvider
     {
-        bool IsAuthorized(IRequestContext requestContext, IUserProvider userProvider, UserRole userRole);
+        Task<bool> IsAuthorized();
     }
 }

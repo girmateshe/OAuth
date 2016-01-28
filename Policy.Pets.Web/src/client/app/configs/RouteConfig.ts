@@ -50,6 +50,16 @@ module App.Configs {
                     url: '/pets/:id/edit',
                     templateUrl: 'app/views/pets/edit.html',
                     controller: App.Controllers.PetsController,
+                })
+                .state('login', { 
+                    url: '/login',
+                    templateUrl: 'app/views/auth/login.html',
+                    controller: App.Controllers.LoginController,
+                })
+                .state('home', {
+                    url: '/home',
+                    templateUrl: 'app/views/home.html',
+                    controller: App.Controllers.LoginController,
                 });
         }
     }

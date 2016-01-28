@@ -12,3 +12,6 @@
 /// <reference path="mocha/mocha.d.ts" />
 /// <reference path="sinon-chai/sinon-chai.d.ts" />
 /// <reference path="sinon/sinon.d.ts" />
+/// <reference path="auth0/auth0.d.ts" />
+/// <reference path="angular-storage/angular-storage.d.ts" />
+/// <reference path="angular-jwt/angular-jwt.d.ts" />
