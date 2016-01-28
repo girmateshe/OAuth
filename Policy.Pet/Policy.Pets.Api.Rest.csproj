@@ -39,6 +39,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="JWT, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\JWT.1.3.2\lib\3.5\JWT.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -118,12 +122,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\ApiSetup.cs" />
+    <Compile Include="App_Start\JsonWebToken.cs" />
+    <Compile Include="App_Start\JsonWebTokenValidationHandler.cs" />
     <Compile Include="App_Start\NinjectDependencyResolver.cs" />
     <Compile Include="App_Start\WebApiConfigeration.cs" />
     <Compile Include="Authentication\ApiAuthorizeAttribute.cs" />
     <Compile Include="Authentication\AuthorizationProvider.cs" />
     <Compile Include="Authentication\IAuthorizationProvider.cs" />
-    <Compile Include="Authentication\UserRole.cs" />
     <Compile Include="Controllers\BreedController.cs" />
     <Compile Include="Controllers\CountryController.cs" />
     <Compile Include="Controllers\JwtController.cs" />

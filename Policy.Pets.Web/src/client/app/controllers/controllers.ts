@@ -6,5 +6,6 @@ module App.Controllers {
 
     angular.module('controllers', ['services'])
         .controller('policiesController', PoliciesController)
-        .controller('httpController', HttpController);
+        .controller('httpController', HttpController)
+        .controller('LoginCtrl', LoginController);
 }

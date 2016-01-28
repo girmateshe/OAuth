@@ -1,5 +1,6 @@
 ﻿using Common.Configuration;
 using Ninject;
+using Policy.Pets.App_Start;
 using Policy.Pets.Authentication;
 using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
@@ -29,8 +30,18 @@ namespace Policy.Pets
             if(apiConfig.IsAuthenticationEnabled  == true)
             {
                 config.Filters.Add(new ApiAuthorizeAttribute());
+
+                /*
+                config.Filters.Add(new AuthorizeAttribute());
+
+                config.MessageHandlers.Add(new JsonWebTokenValidationHandler
+                {
+                    Audience = "yL9jlFUmwEXx8J5RtJ1GmDZ8bC9iZHED",
+                    SymmetricKey = "WWNzA82bwubJ5mDLpfOJI1mHpRE9HrFaZgCJ_YvG3xkPOCo2DD8iDGzs6XmJdMai"
+                }); */
+
             }
-            
+
             //setup dependency resolver for API           
             config.DependencyResolver = resolver;
             //setup dependency for UI controllers
