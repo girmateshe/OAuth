@@ -1,8 +1,141 @@
 ﻿
-<div ng-show="policies == null || policies.length == 0">
+<div style="padding:30px">
+
+    <style>
+        .summary-table {
+            font-family: "Avenir Next","avenir-next-web",Avenir,"Helvetica Neue",Hevetica,sans-serif;
+        }
+
+        .download-links .table {
+            font-family: "Avenir Next","avenir-next-web",Avenir,"Helvetica Neue",Hevetica,sans-serif;
+        }
+
+        .summary-item {
+            margin: 7px;
+        }
+
+            .summary-item .item-label {
+                font-weight: bold;
+            }
+
+            .summary-item.single-item .item-label {
+                font-size: 14px;
+            }
+
+        .summary-table .item-list {
+            padding: 10px;
+        }
+
+        .item-list .summary-item {
+            margin-left: 10px;
+        }
+
+        .item-list h3 {
+            font-weight: 900;
+        }
+
+        .thead-default {
+            background-color: #eceeef;
+        }
+
+        .table {
+            margin-top: 20px;
+        }
+
+        .download-links {
+            padding: 10px;
+        }
+
+        .page-size {
+            padding-right: 20px;
+        }
+    </style>
+
+    <div>
+        <h2>{{table.name}}</h2>
+    </div>
+
+    <div class="summary-table" ng-repeat="item in table.summary">
+        <div ng-if="item.value.length >= 1" class="item-list">
+            <h3>{{item.name}}</h3>
+            <div ng-repeat="sitem in item.value" class="summary-item">
+                <span class="item-label">{{sitem.name}}: </span>
+                <span>{{sitem.value}}</span>
+            </div>
+        </div>
+        <div ng-if="!item.value.length" class="summary-item single-item">
+            <span class="item-label">{{item.name}}</span>:
+            <span>{{item.value}}</span>
+        </div>
+    </div>
+
+    <div class="download-links">
+        <div class="pull-left">
+            <span class="page-size">Page size:</span>
+            <select>
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+        <div class="pull-right">
+            Download:
+            <a href="/">HTML</a> |
+            <a href="/">CSV</a> |
+            <a href="/">PDF</a>
+        </div>
+        <div style="clear:both"></div>
+    </div>
+
+    <table class="table">
+        <thead class="thead-default">
+            <tr>
+                <td ng-repeat="field in table.fields" 
+                    title="{{field.title}}">{{field.name}}
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="row in table.rows">
+                <td ng-repeat="value in row track by $index">
+                    {{value === null ? 'N/A' : value}}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <pagination currentPage="{{table.currentPage}}"
+                totalPages="{{table.totalPages}}"
+                pageSize="{{table.pageSize}}">
+    </pagination>
+
+    <nav>
+        <ul class="pagination pull-right">
+            <li>
+                <a href="#" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li><a class="active disabled" href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">4</a></li>
+            <li><a href="#">5</a></li>
+            <li>
+                <a href="#" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+        
+
+
+</div>
+<div style="clear:both" ng-show="policies == null || policies.length == 0">
     No policies
 </div>
-
 <div ng-show="policies != null && policies.length > 0">
     <h3>All Policies</h3>
     <a ui-sref="newPolicy" class="btn-primary btn-lg nodecoration pull-right" style="margin-bottom:20px">Add New Policy</a>
